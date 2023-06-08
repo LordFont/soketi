@@ -1,11 +1,10 @@
 import { WebSocketServer } from "ws";
+import { createServer } from "http";
 
 // Use port number from the PORT environment variable or 3000 if not specified
 const port = process.env.PORT || 3000;
 
-const http = require('http');
-
-const server = http.createServer(...{port: port});
+const server = createServer({ port: port });
 
 server.listen(port);
 
