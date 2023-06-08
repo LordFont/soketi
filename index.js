@@ -35,4 +35,4 @@ wss.on("connection", (ws) => {
     }
 });
 
-export default wss;
+export default {wss, server};
