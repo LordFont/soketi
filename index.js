@@ -1,5 +1,14 @@
 import { WebSocketServer } from "ws";
 
+// Use port number from the PORT environment variable or 3000 if not specified
+const port = process.env.PORT || 3000;
+
+const http = require('http');
+
+const server = http.createServer(...{port: port});
+
+server.listen(port);
+
 const wss = new WebSocketServer({ port: 8080, clientTracking: true });
 
 wss.on("connection", (ws) => {
