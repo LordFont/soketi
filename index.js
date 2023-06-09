@@ -1,38 +1,28 @@
-import { WebSocketServer } from "ws";
-import { createServer } from "http";
+var WebSocketServer = require("ws").Server
+var http = require("http")
+var express = require("express")
+var app = express()
+var port = process.env.PORT || 5000
 
-// Use port number from the PORT environment variable or 3000 if not specified
-const port = process.env.PORT || 3000;
+app.use(express.static(__dirname + "/"))
 
-const server = createServer({ port: port });
+var server = http.createServer(app)
+server.listen(port)
 
-server.listen(port);
+console.log("http server listening on %d", port)
 
-const wss = new WebSocketServer({ port: 8080, clientTracking: true });
+var wss = new WebSocketServer({server: server})
+console.log("websocket server created")
 
-wss.on("connection", (ws) => {
-    console.log("Client connected");
-    console.log(JSON.stringify(ws));
+wss.on("connection", function(ws) {
+  var id = setInterval(function() {
+    ws.send(JSON.stringify(new Date()), function() {  })
+  }, 1000)
 
-    ws.onerror = (error) => {
-        console.error(error);
-    };
+  console.log("websocket connection open")
 
-    ws.onmessage = (data) => {
-        console.log('received: %s', data);
-
-        const receivedData = JSON.parse(data.data.toString());
-
-        console.log('parsed data: ', receivedData);
-
-
-        ws.send('Response')
-    }
-
-    ws.onclose = (closeEvent) => {
-        console.log("Connection closed: ");
-        console.log(JSON.stringify(closeEvent));
-    }
-});
-
-export default {wss, server};
+  ws.on("close", function() {
+    console.log("websocket connection close")
+    clearInterval(id)
+  })
+})
